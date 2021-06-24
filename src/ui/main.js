@@ -14,10 +14,10 @@ $(function() {
 
 			_main_text.attr('maxlength', item.maxlength);
 			_main_text.val("");	
-			_main_text.focus();
-
+			
 			$("#title_").html(item.title);
 			$(".main").fadeIn("swing");
+			_main_text.focus();
 		}
 
 		if (item.hide) {
