@@ -1,0 +1,108 @@
+local allowmove = false
+local CanWalk = false
+local IsVisible = false
+local CurrentRequestId = 0
+local IsMainTaskWorking = false
+
+local PendingRequests = {}
+
+exports("Show", function(title_, can_walk, max_length, cb)
+	if not IsVisible then
+		if cb ~= nil then
+			local req = GetRequestId()
+
+			IsVisible = true
+			CanWalk = can_walk
+
+			SendNUIMessage({
+				show = true,
+				request = req,
+				maxlength = max_length,
+				title = title_
+			})
+
+			PendingRequests[req] = cb
+
+			if not IsMainTaskWorking then
+				SetNuiFocus(true, true)
+				SetNuiFocusKeepInput(true)
+				SpawnMainTask()
+			end
+			TriggerEvent("mmkeyboard:status", IsVisible)
+		end
+	end
+end)
+
+exports("IsVisible", function()
+	return IsVisible
+end)
+
+exports("Hide", function()
+	Hide()
+end)
+
+RegisterNUICallback("allowmove", function(data, cb)
+	allowmove = data.allowmove
+end)
+
+RegisterNUICallback("response", function(data, cb)
+	local req = data.request
+	if req ~= -1 then
+		local text = data.value
+		if PendingRequests[req] ~= nil then
+			PendingRequests[req](text)
+			PendingRequests[req] = nil
+		end
+	end
+	Hide()
+end)
+
+function GetRequestId()
+	if CurrentRequestId < 65535 then
+		CurrentRequestId = CurrentRequestId + 1
+		return CurrentRequestId
+	else
+		CurrentRequestId = 0
+		return CurrentRequestId
+	end
+end
+
+function SpawnMainTask()
+	if not IsMainTaskWorking then
+		IsMainTaskWorking = true
+		Citizen.CreateThread(function()
+			while IsMainTaskWorking do
+				DisableAllControlActions(0)
+				EnableControlAction(0, 249, true)
+				EnableControlAction(0, 166, true)
+				EnableControlAction(0, 167, true)
+				EnableControlAction(0, 168, true)
+				DisableControlAction(0, 138, true)
+				DisableControlAction(0, 52, true)
+
+				if allowmove and CanWalk then
+					EnableControlAction(0, 30, true)
+					EnableControlAction(0, 31, true)
+					EnableControlAction(0, 32, true)
+					EnableControlAction(0, 33, true)
+					EnableControlAction(0, 34, true)
+					EnableControlAction(0, 35, true)
+				end
+				Citizen.Wait(0)
+			end
+		end)
+	end
+end
+
+function Hide()
+	SendNUIMessage({ hide = true })
+	IsVisible = false
+
+	TriggerEvent("mmkeyboard:status", IsVisible)
+
+	SetTimeout(200, function()
+		SetNuiFocusKeepInput(false)
+		SetNuiFocus(false, false)
+		IsMainTaskWorking = false
+	end)
+end
