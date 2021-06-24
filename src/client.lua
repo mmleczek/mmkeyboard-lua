@@ -8,28 +8,27 @@ local PendingRequests = {}
 
 exports("Show", function(title_, can_walk, max_length, cb)
 	if not IsVisible then
-		if cb ~= nil then
-			local req = GetRequestId()
+		Show(title_, can_walk, max_length, cb)
+	end
+end)
 
-			IsVisible = true
-			CanWalk = can_walk
+exports("ShowSync", function(title_, can_walk, max_length)
+	if not IsVisible then
+		local __done = false
+		local __return = nil
+		
+		Show(title_, can_walk, max_length, function(data)
+			__return = data
+			__done = true
+		end)
 
-			SendNUIMessage({
-				show = true,
-				request = req,
-				maxlength = max_length,
-				title = title_
-			})
-
-			PendingRequests[req] = cb
-
-			if not IsMainTaskWorking then
-				SetNuiFocus(true, true)
-				SetNuiFocusKeepInput(true)
-				SpawnMainTask()
-			end
-			TriggerEvent("mmkeyboard:status", IsVisible)
+		while not __done do
+			Citizen.Wait(0)
 		end
+
+		return __return
+	else
+		return nil
 	end
 end)
 
@@ -56,6 +55,32 @@ RegisterNUICallback("response", function(data, cb)
 	end
 	Hide()
 end)
+
+function Show(title_, can_walk, max_length, cb)	
+	if cb ~= nil then
+		local req = GetRequestId()
+
+		IsVisible = true
+		CanWalk = can_walk
+
+		SendNUIMessage({
+			show = true,
+			request = req,
+			maxlength = max_length,
+			title = title_
+		})
+
+		PendingRequests[req] = cb
+
+		if not IsMainTaskWorking then
+			SetNuiFocus(true, true)
+			SetNuiFocusKeepInput(true)
+			SpawnMainTask()
+		end
+
+		TriggerEvent("mmkeyboard:status", IsVisible)
+	end
+end
 
 function GetRequestId()
 	if CurrentRequestId < 65535 then

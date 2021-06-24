@@ -6,11 +6,19 @@
 @maxlen - defines max possible length of text in textarea
 ```
 ```lua
+-- Async
 exports.mmkeyboard:Show(@title, @allow_to_walk, @maxlen, function(text)
     print(text)
 end)
 
 exports.mmkeyboard:Show("Type in some text:", false, 255, function(text)
     print(text)
-end)```
+end)
+
+--Sync
+exports.mmkeyboard:ShowSync(@title, @allow_to_walk, @maxlen)
+
+local text = exports.mmkeyboard:ShowSync("Type in some text:", false, 255)
+print(text)
+```
 ![myimage-alt-tag](https://i.imgur.com/FB6Y4gB.jpg)

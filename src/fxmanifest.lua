@@ -1,22 +1,23 @@
-fx_version 'cerulean'
-game 'gta5'
+fx_version "cerulean"
+game "gta5"
 lua54 "yes"
 
-author 'mmleczek (mmleczek.pl)'
-version '1.0.0'
+author "mmleczek (mmleczek.pl)"
+version "1.0.1"
 
-ui_page 'ui/ui.html'
+ui_page "ui/ui.html"
 
 files {
-	'ui/*.css',
-	'ui/*.js',
-	'ui/*.html'
+	"ui/*.css",
+	"ui/*.js",
+	"ui/*.html"
 }
 
-client_script 'client.lua'
+client_script "client.lua"
 
 exports {
-	'Show',
-	'IsVisible',
-	'Hide'
+	"Show",
+	"ShowSync",
+	"IsVisible",
+	"Hide"
 }
