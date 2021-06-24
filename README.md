@@ -5,7 +5,7 @@ FiveM Lua resource, created for easy to use GTA's screen keyboard replacement.
 Click [here](https://github.com/mmleczek/mmkeyboard-lua/releases) to go to the releases page and download it.
 
 # Examples
-Examples are available [here](https://github.com/mmleczek/mmkeyboard-lua/blob/master/EXAMPLES.md).
+Examples are available [here](https://github.com/mmleczek/mmkeyboard-lua/blob/main/EXAMPLES.md).
 
 # Copyright
 Copyright © mmleczek.pl 2021.
