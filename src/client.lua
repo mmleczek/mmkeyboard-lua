@@ -6,13 +6,13 @@ local IsMainTaskWorking = false
 
 local PendingRequests = {}
 
-exports("Show", function(title_, can_walk, max_length, cb)
+exports("Show", function(title_, can_walk, max_length, cb, type)
 	if not IsVisible then
-		Show(title_, can_walk, max_length, cb)
+		Show(title_, can_walk, max_length, cb, type)
 	end
 end)
 
-exports("ShowSync", function(title_, can_walk, max_length)
+exports("ShowSync", function(title_, can_walk, max_length, type)
 	if not IsVisible then
 		local __done = false
 		local __return = nil
@@ -20,7 +20,7 @@ exports("ShowSync", function(title_, can_walk, max_length)
 		Show(title_, can_walk, max_length, function(data)
 			__return = data
 			__done = true
-		end)
+		end, type)
 
 		while not __done do
 			Citizen.Wait(0)
@@ -56,9 +56,13 @@ RegisterNUICallback("response", function(data, cb)
 	Hide()
 end)
 
-function Show(title_, can_walk, max_length, cb)	
+function Show(title_, can_walk, max_length, cb, type_)
 	if cb ~= nil then
 		local req = GetRequestId()
+
+		if type_ ~= "text" and type_ ~= "small_text" and type_ ~= "number" then
+			type_ = "text"
+		end
 
 		IsVisible = true
 		CanWalk = can_walk
@@ -67,7 +71,8 @@ function Show(title_, can_walk, max_length, cb)
 			show = true,
 			request = req,
 			maxlength = max_length,
-			title = title_
+			title = title_,
+			type = type_
 		})
 
 		PendingRequests[req] = cb
