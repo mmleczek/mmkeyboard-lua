@@ -3,7 +3,7 @@ game "gta5"
 lua54 "yes"
 
 author "mmleczek (mmleczek.pl)"
-version "1.0.1"
+version "1.0.2"
 
 ui_page "ui/ui.html"
 
